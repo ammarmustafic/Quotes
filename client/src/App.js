@@ -1,7 +1,10 @@
+import React from 'react';
+import QuoteComponent from './components/QuoteComponent/quote';
+
 function App() {
   return (
-    <div>
-      App Works!
+    <div className="App">
+      <QuoteComponent />
     </div>
   );
 }

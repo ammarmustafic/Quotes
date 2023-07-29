@@ -1,0 +1,74 @@
+.login-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+
+    animation-name: fadeIn;
+    animation-duration: 1s;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+  
+  .login-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .login-container div {
+    margin-bottom: 10px;
+  }
+  
+  .login-container input {
+    width: 100%;
+    padding: 15px; 
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .login-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-container button:hover {
+    background-color: #0056b3;
+  }
+  
+ 
+  
+  
+  /* Animation for Input Fields */
+  .login-container input {
+    transition: border-color 0.3s ease;
+  }
+  
+  .login-container input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Add more animations to make it cooler and unique! */
+  
