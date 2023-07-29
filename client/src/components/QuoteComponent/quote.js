@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Pagination } from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import LoginComponent from './../LoginComponent/login'; // Import the LoginComponent
+import LoginComponent from './../LoginComponent/login'; 
 
 const QuoteComponent = () => {
   const [quotes, setQuotes] = useState([]);
