@@ -59,8 +59,8 @@
   position: absolute;
   top: 50%;
   color: #fff;
-  left: -12%; /* Adjust this value to move the vote icons more to the left */
-  transform: translateY(-50%); /* Center the vote icons vertically */
+  left: -12%; 
+  transform: translateY(-50%);
 }
 
 .log-out-button {
