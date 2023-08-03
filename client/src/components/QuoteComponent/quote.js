@@ -5,12 +5,6 @@ import { Pagination } from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import LoginComponent from './../LoginComponent/login'; 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 
 const QuoteComponent = () => {
   const [quotes, setQuotes] = useState([]);
@@ -23,7 +17,7 @@ const QuoteComponent = () => {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [isTagMenuOpen, setIsTagMenuOpen] = useState(false); // Make sure the initial state is set to false
+  const [isTagMenuOpen, setIsTagMenuOpen] = useState(false); 
 
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const [newQuoteAuthor, setNewQuoteAuthor] = useState('');
@@ -190,18 +184,18 @@ const displayedQuotes = quotes
     const tagName = event.target.name;
     setSelectedTags((prevSelectedTags) =>
       event.target.checked
-        ? [...prevSelectedTags, tagName] // Add the selected tag to the state
-        : prevSelectedTags.filter((tag) => tag !== tagName) // Remove the tag from the state
+        ? [...prevSelectedTags, tagName] 
+        : prevSelectedTags.filter((tag) => tag !== tagName) 
     );
   };
 
-  // Filter quotes based on selected tags
+
   const filteredQuotes = quotes.filter((quote) => selectedTags.length === 0 || selectedTags.some((tag) => quote.tags.includes(tag)));
 
   const handleToggleTagMenu = () => {
-    console.log('Tags button clicked'); // Add this line
+    console.log('Tags button clicked'); 
 
-    setIsTagMenuOpen(!isTagMenuOpen); // Toggle the isTagMenuOpen state
+    setIsTagMenuOpen(!isTagMenuOpen);
   };
   
   const handleCloseTagMenu = () => {
@@ -258,7 +252,7 @@ const displayedQuotes = quotes
           <Button
   variant="outlined"
   color="primary"
-  onClick={handleToggleTagMenu} // Check if the onClick event is correctly linked
+  onClick={handleToggleTagMenu}
   className={isTagMenuOpen ? "tag-menu-button open" : "tag-menu-button"}
 >
   Tags
@@ -371,6 +365,5 @@ const displayedQuotes = quotes
       )}
     </div>
   );
-};
-
-export default QuoteComponent;
+    }
+      export default QuoteComponent;
