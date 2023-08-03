@@ -4,18 +4,31 @@ import axios from 'axios';
 import { Pagination } from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import LoginComponent from './../LoginComponent/login'; // Import the LoginComponent
+import LoginComponent from './../LoginComponent/login'; 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
 const QuoteComponent = () => {
   const [quotes, setQuotes] = useState([]);
   const [page, setPage] = useState(1);
+  const [duplicateQuoteError, setDuplicateQuoteError] = useState('');
   const [userVotes, setUserVotes] = useState({});
   const [selectedTags, setSelectedTags] = useState([]);
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
+  const [isTagMenuOpen, setIsTagMenuOpen] = useState(false); // Make sure the initial state is set to false
+
+  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
+  const [newQuoteAuthor, setNewQuoteAuthor] = useState('');
+  
+  const [newQuoteContent, setNewQuoteContent] = useState('');
 
   const quotesPerPage = 5;
 
@@ -27,6 +40,7 @@ const QuoteComponent = () => {
       });
       const data = response.data;
       setQuotes(data.quotes);
+     
     } catch (error) {
       console.error('Error fetching quotes:', error);
       setError('Error fetching quotes. Please try again later.');
@@ -57,6 +71,7 @@ const QuoteComponent = () => {
     fetchQuotes();
     fetchTags();
   }, []);
+
 
   const handleUpvote = (quoteId) => {
     setUserVotes((prevUserVotes) => {
@@ -127,11 +142,13 @@ const QuoteComponent = () => {
     setPage(newPage);
   };
 
+ 
+
   const startIndex = (page - 1) * quotesPerPage;
-  const endIndex = startIndex + quotesPerPage;
-  const displayedQuotes = quotes
-    .filter((quote) => selectedTags.length === 0 || selectedTags.some((tag) => quote.tags.includes(tag)))
-    .slice(startIndex, endIndex);
+const endIndex = startIndex + quotesPerPage;
+const displayedQuotes = quotes
+  .filter((quote) => selectedTags.length === 0 || selectedTags.some((tag) => quote.tags.includes(tag)))
+  .slice(startIndex, endIndex);
 
   const getColorByPercentage = (percentage) => {
     if (percentage >= 80) {
@@ -149,54 +166,126 @@ const QuoteComponent = () => {
 
   const handleLogin = (accesToken, username) => {
     setIsLoggedIn(true);
-    setUsername(username); 
+    setUsername(username);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setUsername(''); 
+    setUsername('');
   };
 
+  const [showCreateButton, setShowCreateButton] = useState(false);
+
+  useEffect(() => {
+    
+    const timer = setTimeout(() => {
+      setShowCreateButton(true);
+    }, 5000);
+
+ 
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleTagCheckboxChange = (event) => {
+    const tagName = event.target.name;
+    setSelectedTags((prevSelectedTags) =>
+      event.target.checked
+        ? [...prevSelectedTags, tagName] // Add the selected tag to the state
+        : prevSelectedTags.filter((tag) => tag !== tagName) // Remove the tag from the state
+    );
+  };
+
+  // Filter quotes based on selected tags
+  const filteredQuotes = quotes.filter((quote) => selectedTags.length === 0 || selectedTags.some((tag) => quote.tags.includes(tag)));
+
+  const handleToggleTagMenu = () => {
+    console.log('Tags button clicked'); // Add this line
+
+    setIsTagMenuOpen(!isTagMenuOpen); // Toggle the isTagMenuOpen state
+  };
+  
+  const handleCloseTagMenu = () => {
+    setIsTagMenuOpen(false);
+  };
+
+  const handleOpenQuoteDialog = () => {
+    setIsQuoteDialogOpen(true);
+  };
+
+  const handleCloseQuoteDialog = () => {
+    setIsQuoteDialogOpen(false);
+  };
+
+
+  const handleAddQuote = () => {
+    const existingQuote = quotes.find((quote) => quote.content === newQuoteContent);
+    if (existingQuote) {
+      setDuplicateQuoteError('This quote already exists.'); 
+      return;
+    }
+
+    const newQuote = {
+      id: quotes.length + 1, 
+      author: newQuoteAuthor,
+      content: newQuoteContent,
+      upvotesCount: 0,
+      downvotesCount: 0,
+      tags: [],
+    };
+
+ 
+    setQuotes([...quotes, newQuote]);
+
+
+    handleCloseQuoteDialog();
+  };
   return (
     <div className="quote-container">
       {isLoading ? (
         <p>Loading...</p>
       ) : isLoggedIn ? (
         <>
-        <div className="user-info" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexDirection: "column" }}>
-            <button className="log-out-button" onClick={handleLogout} style={{marginLeft: "1600px"}}>
+          <div className="user-info" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexDirection: "column" }}>
+            <button className="log-out-button" onClick={handleLogout} style={{ marginLeft: "1600px" }}>
               Log Out
             </button>
-            <p className="username" style={{marginLeft: "1600px", marginTop: "10px", color: "#fff"}}>
+            <p className="username" style={{ marginLeft: "1600px", marginTop: "10px", color: "#fff" }}>
               Logged in as: {username}
             </p>
           </div>
           <h1 style={{ color: '#fff', marginBottom: '70px', marginTop: '20px', fontSize: '50px' }}>Quotes</h1>
-          {tags.length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              {tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  style={{
-                    display: 'inline-block',
-                    background: '#f1f1f1',
-                    padding: '4px 8px',
-                    marginRight: '8px',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          )}
+          <div style={{ marginBottom: '20px' }}>
+          <Button
+  variant="outlined"
+  color="primary"
+  onClick={handleToggleTagMenu} // Check if the onClick event is correctly linked
+  className={isTagMenuOpen ? "tag-menu-button open" : "tag-menu-button"}
+>
+  Tags
+</Button>
+            {tags.length > 0 && isTagMenuOpen && (
+          <div className="tag-menu">
+            {tags.map((tag) => (
+              <label key={tag} style={{ display: 'block' }}>
+                <input
+                  type="checkbox"
+                  name={tag}
+                  checked={selectedTags.includes(tag)}
+                  onChange={handleTagCheckboxChange}
+                />
+                {tag}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
           <ul className="quote-list">
             {displayedQuotes.map((quote) => {
               const totalVotes = quote.upvotesCount + quote.downvotesCount;
               const positivePercentage = totalVotes > 0 ? Math.round((quote.upvotesCount / totalVotes) * 100) : 0;
               const percentageColor = getColorByPercentage(positivePercentage);
               const userVote = userVotes[quote.id];
-  
+
               return (
                 <li key={quote.id} className="quote-item">
                   <p className="quote-content">{quote.content}</p>
@@ -223,7 +312,7 @@ const QuoteComponent = () => {
               );
             })}
           </ul>
-  
+
           {totalPages > 0 && (
             <Pagination
               count={totalPages}
@@ -233,11 +322,55 @@ const QuoteComponent = () => {
               style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', marginBottom: '20px' }}
             />
           )}
+
+          {showCreateButton && (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleOpenQuoteDialog}
+              className={showCreateButton ? "create-button show" : "create-button"}
+              style={{ position: 'fixed', right: '20px', bottom: '20px', transform: showCreateButton ? 'scale(1.1)' : 'scale(1)' }}
+            >
+              Create New Quote
+            </Button>
+          )}
+
+<Dialog open={isQuoteDialogOpen} onClose={handleCloseQuoteDialog}>
+            <DialogTitle>Create New Quote</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="Author"
+                value={newQuoteAuthor}
+                onChange={(e) => setNewQuoteAuthor(e.target.value)}
+                fullWidth
+                style={{ marginBottom: '10px', marginTop: "20px" }}
+              />
+              <TextField
+                label="Quote Content"
+                value={newQuoteContent}
+                onChange={(e) => setNewQuoteContent(e.target.value)}
+                fullWidth
+                multiline
+                rows={4}
+                style={{ marginTop: '10px' }}
+              />
+              {duplicateQuoteError && <p style={{ color: 'red' }}>{duplicateQuoteError}</p>}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseQuoteDialog} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleAddQuote} color="primary">
+                Add
+              </Button>
+            </DialogActions>
+          </Dialog>
         </>
       ) : (
         <LoginComponent onLogin={handleLogin} />
       )}
     </div>
   );
-    }
-      export default QuoteComponent;
+};
+
+export default QuoteComponent;
