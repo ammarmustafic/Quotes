@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { AccountCircle, Lock, Person } from '@mui/icons-material'; 
 import './login.css';
 
 const LoginComponent = ({ onLogin }) => {
@@ -32,27 +33,49 @@ const LoginComponent = ({ onLogin }) => {
 
   return (
     <div className="login-container">
-      <h1>Login</h1>
-      <div>
+      <div className="avatar-container">
+        <div className="avatar-icon">
+          <Person />
+        </div>
+      </div>
+      <div className="input-container">
+        <div className="input-icon">
+          <AccountCircle />
+        </div>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Username" style={{marginLeft: "10px"}}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
+        <hr></hr>
       </div>
-      <div>
+      <div className="input-container">
+        <div className="input-icon">
+          <Lock />
+        </div>
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Password" style={{marginLeft: "10px"}}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onKeyPress={handleKeyPress}
         />
+         <hr style={{borderColor: ""}}></hr>
       </div>
-      <button onClick={handleLogin}>Login</button>
+     
+
+
+     <div className='login-button-container'>
+      <button className="login-button" onClick={handleLogin}>
+        Login
+      </button>
+      </div>
     </div>
   );
 };
 
 export default LoginComponent;
+
+
+
