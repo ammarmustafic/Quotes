@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './quote.css';
 import axios from 'axios';
-import { Pagination, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import { Pagination, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions} from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 import LoginComponent from './../LoginComponent/login';
 
 const QuoteComponent = () => {
@@ -11,13 +12,11 @@ const QuoteComponent = () => {
   const [page, setPage] = useState(1);
   const [duplicateQuoteError, setDuplicateQuoteError] = useState('');
   const [userVotes, setUserVotes] = useState({});
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [isTagMenuOpen, setIsTagMenuOpen] = useState(false); 
+
 
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const [newQuoteAuthor, setNewQuoteAuthor] = useState('');
@@ -43,29 +42,12 @@ const QuoteComponent = () => {
     }
   };
 
-  const fetchTags = async () => {
-    try {
-      const accessToken = 'yuim98oq-e275-45a2-bc2e-b3098036d655';
-      const response = await axios.get('http://localhost:8000/tags', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      const data = response.data;
-      if (data && data.tags) {
-        setTags(data.tags);
-      }
-    } catch (error) {
-      console.error('Error fetching tags:', error);
-      setError('Error fetching tags. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   useEffect(() => {
     fetchQuotes();
-    fetchTags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   const handleUpvote = (quoteId) => {
     setUserVotes((prevUserVotes) => {
@@ -125,9 +107,7 @@ const QuoteComponent = () => {
     });
   };
 
-  const handleTagChange = (event) => {
-    setSelectedTags(event.target.value);
-  };
+
 
   const totalQuotes = quotes.length;
   const totalPages = Math.ceil(totalQuotes / quotesPerPage);
@@ -141,8 +121,8 @@ const QuoteComponent = () => {
   const startIndex = (page - 1) * quotesPerPage;
 const endIndex = startIndex + quotesPerPage;
 const displayedQuotes = quotes
-  .filter((quote) => selectedTags.length === 0 || selectedTags.some((tag) => quote.tags.includes(tag)))
-  .slice(startIndex, endIndex);
+? quotes.slice(startIndex, endIndex)
+: [];
 
   const getColorByPercentage = (percentage) => {
     if (percentage >= 80) {
@@ -154,7 +134,7 @@ const displayedQuotes = quotes
     } else if (percentage >= 20) {
       return 'orange';
     } else {
-      return 'orange';
+      return 'rgb(170, 74, 68)';
     }
   };
 
@@ -180,27 +160,7 @@ const displayedQuotes = quotes
     return () => clearTimeout(timer);
   }, []);
 
-  const handleTagCheckboxChange = (event) => {
-    const tagName = event.target.name;
-    setSelectedTags((prevSelectedTags) =>
-      event.target.checked
-        ? [...prevSelectedTags, tagName] 
-        : prevSelectedTags.filter((tag) => tag !== tagName) 
-    );
-  };
 
-
-  const filteredQuotes = quotes.filter((quote) => selectedTags.length === 0 || selectedTags.some((tag) => quote.tags.includes(tag)));
-
-  const handleToggleTagMenu = () => {
-    console.log('Tags button clicked'); 
-
-    setIsTagMenuOpen(!isTagMenuOpen);
-  };
-  
-  const handleCloseTagMenu = () => {
-    setIsTagMenuOpen(false);
-  };
 
   const handleOpenQuoteDialog = () => {
     setIsQuoteDialogOpen(true);
@@ -248,37 +208,16 @@ const displayedQuotes = quotes
             </p>
           </div>
           <h1 style={{ color: '#fff', marginBottom: '70px', marginTop: '20px', fontSize: '50px' }}>Quotes</h1>
-          <div style={{ marginBottom: '20px' }}>
-          <Button
-  variant="outlined"
-  color="primary"
-  onClick={handleToggleTagMenu}
-  className={isTagMenuOpen ? "tag-menu-button open" : "tag-menu-button"}
->
-  Tags
-</Button>
-            {tags.length > 0 && isTagMenuOpen && (
-          <div className="tag-menu">
-            {tags.map((tag) => (
-              <label key={tag} style={{ display: 'block' }}>
-                <input
-                  type="checkbox"
-                  name={tag}
-                  checked={selectedTags.includes(tag)}
-                  onChange={handleTagCheckboxChange}
-                />
-                {tag}
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-          <ul className="quote-list">
-            {displayedQuotes.map((quote) => {
-              const totalVotes = quote.upvotesCount + quote.downvotesCount;
-              const positivePercentage = totalVotes > 0 ? Math.round((quote.upvotesCount / totalVotes) * 100) : 0;
-              const percentageColor = getColorByPercentage(positivePercentage);
-              const userVote = userVotes[quote.id];
+        
+ 
+        <ul className="quote-list">
+  {displayedQuotes
+    .map((quote) => {
+      const totalVotes = quote.upvotesCount + quote.downvotesCount;
+      const positivePercentage = totalVotes > 0 ? Math.round((quote.upvotesCount / totalVotes) * 100) : 0;
+      const percentageColor = getColorByPercentage(positivePercentage);
+      const userVote = userVotes[quote.id];
+
 
               return (
                 <li key={quote.id} className="quote-item">
